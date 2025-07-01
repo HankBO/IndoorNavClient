@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4792B8D72E1418EA00415D8A /* CoreWLAN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792B8D62E1418EA00415D8A /* CoreWLAN.framework */; };
+		4792B8D92E1418F900415D8A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792B8D82E1418F900415D8A /* Foundation.framework */; };
+		4792B8DB2E14190100415D8A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792B8DA2E14190100415D8A /* Cocoa.framework */; };
+		4792B8DD2E14190A00415D8A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792B8DC2E14190A00415D8A /* WebKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		474B3C212E12CD07009B447F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +34,10 @@
 		474B3C0F2E12CD04009B447F /* IndoorNavClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IndoorNavClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		474B3C202E12CD07009B447F /* IndoorNavClientTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IndoorNavClientTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		474B3C2A2E12CD07009B447F /* IndoorNavClientUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IndoorNavClientUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4792B8D62E1418EA00415D8A /* CoreWLAN.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreWLAN.framework; path = System/Library/Frameworks/CoreWLAN.framework; sourceTree = SDKROOT; };
+		4792B8D82E1418F900415D8A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		4792B8DA2E14190100415D8A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		4792B8DC2E14190A00415D8A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +63,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4792B8D72E1418EA00415D8A /* CoreWLAN.framework in Frameworks */,
+				4792B8D92E1418F900415D8A /* Foundation.framework in Frameworks */,
+				4792B8DD2E14190A00415D8A /* WebKit.framework in Frameworks */,
+				4792B8DB2E14190100415D8A /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +93,7 @@
 				474B3C112E12CD04009B447F /* IndoorNavClient */,
 				474B3C232E12CD07009B447F /* IndoorNavClientTests */,
 				474B3C2D2E12CD07009B447F /* IndoorNavClientUITests */,
+				4792B8D52E1418D400415D8A /* Frameworks */,
 				474B3C102E12CD04009B447F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +106,17 @@
 				474B3C2A2E12CD07009B447F /* IndoorNavClientUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4792B8D52E1418D400415D8A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4792B8DC2E14190A00415D8A /* WebKit.framework */,
+				4792B8DA2E14190100415D8A /* Cocoa.framework */,
+				4792B8D82E1418F900415D8A /* Foundation.framework */,
+				4792B8D62E1418EA00415D8A /* CoreWLAN.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
