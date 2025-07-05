@@ -18,11 +18,28 @@ struct WiFiNetwork: Codable {
     let ssid: String?
     let rssi: Int
     let frequency: Int?
-    let security: String?
 }
 
 struct DeviceInfo: Codable {
     let deviceId: String
     let macAddress: String?
     let systemVersion: String
+}
+
+struct LocationResponse: Codable {
+    let estimatedLocation: Coordinate
+    let confidence: Double
+    let timestamp: Date
+}
+
+struct Coordinate: Codable {
+    let x: Double
+    let y: Double
+    let floor: Int?
+}
+
+enum WiFiScannerError: Error {
+    case interfaceNotFound
+    case scanFailed
+    case permissionDenied
 }
