@@ -17,7 +17,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         mainWindowController = storyboard.instantiateController(withIdentifier: "MainWindowController") as? MainWindowController
-        mainWindowController?.showWindow(self)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
