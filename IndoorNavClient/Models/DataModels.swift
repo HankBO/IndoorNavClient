@@ -26,20 +26,32 @@ struct DeviceInfo: Codable {
     let systemVersion: String
 }
 
-struct LocationResponse: Codable {
-    let estimatedLocation: Coordinate
-    let confidence: Double
-    let timestamp: Date
-}
-
-struct Coordinate: Codable {
-    let x: Double
-    let y: Double
-    let floor: Int?
-}
-
 enum WiFiScannerError: Error {
     case interfaceNotFound
     case scanFailed
     case permissionDenied
+}
+
+struct LocationResponse: Codable {
+    let timestamp: Date
+}
+
+struct CollectDataResponse: Codable {
+    let success: Bool
+    let message: String
+    let id: String?
+}
+
+struct PositioningResponse: Codable {
+    let success: Bool
+    let confidence: Double?
+    let message: String?
+}
+
+enum APIError: Error {
+    case requestFailed
+    case uploadFailed
+    case invalidResponse
+    case collectDataFailed
+    case positioningFailed
 }

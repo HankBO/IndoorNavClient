@@ -41,6 +41,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		474188262E1D72F800D919D9 /* Tools */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tools;
+			sourceTree = "<group>";
+		};
 		474B3C112E12CD04009B447F /* IndoorNavClient */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = IndoorNavClient;
@@ -90,6 +95,7 @@
 		474B3C062E12CD04009B447F = {
 			isa = PBXGroup;
 			children = (
+				474188262E1D72F800D919D9 /* Tools */,
 				474B3C112E12CD04009B447F /* IndoorNavClient */,
 				474B3C232E12CD07009B447F /* IndoorNavClientTests */,
 				474B3C2D2E12CD07009B447F /* IndoorNavClientUITests */,
@@ -181,6 +187,7 @@
 				474B3C2C2E12CD07009B447F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
+				474188262E1D72F800D919D9 /* Tools */,
 				474B3C2D2E12CD07009B447F /* IndoorNavClientUITests */,
 			);
 			name = IndoorNavClientUITests;
