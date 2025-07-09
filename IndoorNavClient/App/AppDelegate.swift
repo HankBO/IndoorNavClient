@@ -17,6 +17,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         let storyboard = NSStoryboard(name: "Main", bundle: nil)
         mainWindowController = storyboard.instantiateController(withIdentifier: "MainWindowController") as? MainWindowController
+        
+        /*
+        let wifiPositioningService = WiFiPositioningService()
+        Task {
+            do {
+                try await wifiPositioningService.collectTrainingData(at: Coordinate(x: 0, y: 0, floor: 1))
+                
+                print("Successfully run GetFingerprint")
+            } catch {
+                print("Failed to collect fingerprint")
+            }
+        }
+         */
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
