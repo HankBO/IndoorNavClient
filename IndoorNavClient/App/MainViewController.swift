@@ -277,12 +277,12 @@ class MainViewController: NSViewController {
     }
     
     @objc @IBAction func saveTrainingLocation(_ sender: NSButton) {
-        guard let roomText = RoomInputField?.stringValue else {
+        guard let roomText = RoomInputField?.stringValue, roomText.count > 0 else {
             statusLabel.stringValue = "Please enter valid Room Name"
             return
         }
         
-        guard let sampleSiteText = SampleSiteInputField?.stringValue else {
+        guard let sampleSiteText = SampleSiteInputField?.stringValue, sampleSiteText.count > 0 else {
             statusLabel.stringValue = "Please enter valid Sample Site"
             return
         }
