@@ -44,8 +44,8 @@ struct CollectDataResponse: Codable {
 
 struct PositioningResponse: Codable {
     let success: Bool
-    let confidence: Double?
-    let message: String?
+    let fingerprint: WiFiFingerprint
+    let message: String
 }
 
 enum APIError: Error {

@@ -21,7 +21,8 @@ class MainViewController: NSViewController {
     var trainingContainerView: NSView!
     
     // Services
-    private let locationService = WiFiPositioningService()
+    private let positioningService = WiFiPositioningService()
+    private let webBridge = WebViewBridge()
     
     
     override func viewDidLoad() {
@@ -29,7 +30,7 @@ class MainViewController: NSViewController {
 
         // Do any additional setup after loading the view.
         setupWebView()
-        setupNotificationService()
+        setupPositioningService()
         setupInitialUI()
         loadWebInterface()
     }
@@ -41,7 +42,11 @@ class MainViewController: NSViewController {
     }
     
     private func setupWebView() {
+        // Configure WebView with JS bridge
         let configuration = WKWebViewConfiguration()
+        let userContentController = WKUserContentController()
+        userContentController.add(webBridge, name: "nativeHandler")
+        configuration.userContentController = userContentController
         
         // Create WebView if not connected via storyboard
         if webView == nil {
@@ -62,16 +67,18 @@ class MainViewController: NSViewController {
                 webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
             ])
         }
+        
+        webBridge.webView = webView
     }
     
-    private func setupNotificationService() {
+    private func setupPositioningService() {
             NotificationCenter.default.addObserver(
-                forName: .locationUpdated,
+                forName: .positioningUpdated,
                 object: nil,
                 queue: .main
             ) { [weak self] notification in
-                if let location = notification.object as? LocationResponse {
-                    self?.handleLocationUpdate(location)
+                if let response = notification.object as? PositioningResponse {
+                    self?.handlePositioningUpdate(response)
                 }
             }
             
@@ -249,9 +256,30 @@ class MainViewController: NSViewController {
          }
     }
     
-    private func handleLocationUpdate(_ location: LocationResponse) {
-        let locationText = "handleLocationUpdate success!"
-        statusLabel.stringValue = locationText
+    private func handlePositioningUpdate(_ response: PositioningResponse) {
+        if response.success {
+            
+            let networks = response.fingerprint.networks.map { network in
+                [
+                    "bssid": network.bssid,
+                    "rssi": network.rssi
+                ]
+            }
+            
+            let fingerprintData: [String: Any] = [
+                "timestamp": response.fingerprint.timestamp.timeIntervalSince1970,
+                "networks": networks
+            ]
+            
+            let stringFPData = dictToJsonString(fingerprintData)
+            
+            // send native method vue frontend
+            webBridge.getPositioningUpdate(stringFPData)
+            let locationText = "handlePositioningUpdate success!"
+            statusLabel.stringValue = locationText
+        } else {
+            statusLabel.stringValue = "handlePositioningUpdate falied: \(response.message)"
+        }
     }
     
     private func handleTrainingDataResponse(_ response: CollectDataResponse) {
@@ -268,12 +296,16 @@ class MainViewController: NSViewController {
         startButton.isEnabled = false
         stopButton.isEnabled = true
         statusLabel.stringValue = "Location tracking started..."
+        
+        positioningService.startLocationTracking()
     }
     
     @objc @IBAction func stopLocationTracking(_ sender: NSButton) {
         startButton.isEnabled = true
         stopButton.isEnabled = false
         statusLabel.stringValue = "Location tracking stopped"
+        
+        positioningService.stopLocationTracking()
     }
     
     @objc @IBAction func saveTrainingLocation(_ sender: NSButton) {
@@ -289,7 +321,7 @@ class MainViewController: NSViewController {
         
         Task {
             do {
-                try await locationService.collectTrainingData(roomText: roomText, sampleSiteText: sampleSiteText)
+                try await positioningService.collectTrainingData(roomText: roomText, sampleSiteText: sampleSiteText)
             } catch {
                 DispatchQueue.main.async {
                     self.statusLabel.stringValue = "Failed to submit training data: \(error.localizedDescription)"

@@ -8,7 +8,7 @@
 import Foundation
 
 extension Notification.Name {
-    static let locationUpdated = Notification.Name("locationUpdated")
+    static let positioningUpdated = Notification.Name("positioningUpdated")
     static let wifiScanCompleted = Notification.Name("wifiScanCompleted")
     static let trainingDataCollected = Notification.Name("trainingDataCollected")
 }
@@ -37,18 +37,21 @@ class WiFiPositioningService {
     private func performPositioningRequest() async {
         do {
             let fingerprint = try await scanner.createFingerprint()
-            let positioningResponse = try await apiInterface.requestPositioning(fingerprint)
+
+            let response = PositioningResponse(
+                success: true,
+                fingerprint: fingerprint,
+                message: "success"
+            )
             
-            if positioningResponse.success {
-                let locationResponse = LocationResponse(timestamp: Date())
-                
-                await MainActor.run {
-                    NotificationCenter.default.post(name: .locationUpdated, object: locationResponse)
-                }
-            } else {
-                print("Positioning failed: \(positioningResponse.message ?? "Unknown error")")
+            //try JSONDecoder().decode(PositioningResponse.self, from: data)
+            
+            await MainActor.run {
+                NotificationCenter.default.post(
+                    name: .positioningUpdated,
+                    object: response,
+                )
             }
-            
         } catch {
             print("Positioning request failed: \(error)")
         }
@@ -69,5 +72,13 @@ class WiFiPositioningService {
         }
         
         return response
+    }
+    
+    private func jsonString(from object: [String: Any]) -> String {
+        guard let data = try? JSONSerialization.data(withJSONObject: object),
+              let string = String(data: data, encoding: .utf8) else {
+            return "{}"
+        }
+        return string
     }
 }
