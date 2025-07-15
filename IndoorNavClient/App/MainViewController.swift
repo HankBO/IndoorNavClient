@@ -45,7 +45,7 @@ class MainViewController: NSViewController {
         // Configure WebView with JS bridge
         let configuration = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
-        userContentController.add(webBridge, name: "nativeHandler")
+        userContentController.add(webBridge, name: "nativeApp")
         configuration.userContentController = userContentController
         
         // Create WebView if not connected via storyboard
@@ -271,10 +271,8 @@ class MainViewController: NSViewController {
                 "networks": networks
             ]
             
-            let stringFPData = dictToJsonString(fingerprintData)
-            
             // send native method vue frontend
-            webBridge.getPositioningUpdate(stringFPData)
+            webBridge.getPositioningUpdate(fingerprintData)
             let locationText = "handlePositioningUpdate success!"
             statusLabel.stringValue = locationText
         } else {

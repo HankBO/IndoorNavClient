@@ -73,12 +73,4 @@ class WiFiPositioningService {
         
         return response
     }
-    
-    private func jsonString(from object: [String: Any]) -> String {
-        guard let data = try? JSONSerialization.data(withJSONObject: object),
-              let string = String(data: data, encoding: .utf8) else {
-            return "{}"
-        }
-        return string
-    }
 }
