@@ -9,6 +9,7 @@ import Foundation
 
 extension Notification.Name {
     static let positioningUpdated = Notification.Name("positioningUpdated")
+    static let positioningCancelled = Notification.Name("positioningCancelled")
     static let wifiScanCompleted = Notification.Name("wifiScanCompleted")
     static let trainingDataCollected = Notification.Name("trainingDataCollected")
 }
@@ -19,7 +20,7 @@ class WiFiPositioningService {
     private var isTracking = false
     private var trackingTimer: Timer?
     
-    func startLocationTracking(interval: TimeInterval = 3.0) {
+    func startLocationTracking(interval: TimeInterval = 2.0) {
         isTracking = true
         trackingTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
             Task {
@@ -32,6 +33,10 @@ class WiFiPositioningService {
         isTracking = false
         trackingTimer?.invalidate()
         trackingTimer = nil
+        
+        Task {
+            await self.stopPositioningDisplay()
+        }
     }
     
     private func performPositioningRequest() async {
@@ -54,6 +59,17 @@ class WiFiPositioningService {
             }
         } catch {
             print("Positioning request failed: \(error)")
+        }
+    }
+    
+    private func stopPositioningDisplay() async {
+        await MainActor.run {
+            NotificationCenter.default.post(
+                name: .positioningCancelled,
+                object: PositioningCancelledResponse(
+                    success: true
+                )
+            )
         }
     }
     
