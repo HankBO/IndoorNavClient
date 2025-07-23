@@ -5,7 +5,7 @@ import os
 RAW_FILE = "raw_fingerprints.csv"
 CSV_PATH = "/Users/haibo/Documents"
 ABANDON_THRESHOLD = 2
-SAMPLE_TIMES = 4
+SAMPLE_TIMES = 3
 BETA_1 = 0.8
 BETA_2 = 0.2
 BETA_3 = 0.8
@@ -110,6 +110,7 @@ if __name__ == "__main__":
     filtered_df = filter_fingerprints(df)
     filtered_df = filtered_df.drop(columns=['detected_times'])
     filtered_df['fp_id'] = filtered_df.groupby('site_id').ngroup() + 1
+    filtered_df['floor_num'] = 1
     filtered_df.to_csv(os.path.join(CSV_PATH, "filtered_fingerprints.csv"), index=True)
 
     print("Filtered fingerprints saved to filtered_fingerprints.csv")
