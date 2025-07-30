@@ -23,7 +23,7 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
     }
     
     func getPositioningUpdate(_ fingerprintJsonData: [String: Any]) {
-        
+        print("Send fingerprint to frontend service, timestamp: \(getCurrentTimeByHHmmssSSS())")
         let string: String = dictToJsonString(fingerprintJsonData)!
         
         // print("send script to front-end:", string)
@@ -34,7 +34,6 @@ class WebViewBridge: NSObject, WKScriptMessageHandler {
     }
     
     func stopPositioningDisplay() {
-        print("script is called")
         let script = "window.stopPositioningDisplay()"
         webView?.evaluateJavaScript(script)
     }

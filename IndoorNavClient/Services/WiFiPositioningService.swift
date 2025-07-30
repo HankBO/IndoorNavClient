@@ -42,7 +42,7 @@ class WiFiPositioningService {
     private func performPositioningRequest() async {
         do {
             let fingerprint = try await scanner.createFingerprint()
-
+            print("Scanning network finished, timestamp: \(getCurrentTimeByHHmmssSSS())")
             let response = PositioningResponse(
                 success: true,
                 fingerprint: fingerprint,
@@ -75,7 +75,6 @@ class WiFiPositioningService {
     
     func collectTrainingData(roomText: String, sampleSiteText: String) async throws -> CollectDataResponse {
         let fingerprint = try await scanner.createFingerprint()
-        print(fingerprint)
         print(roomText)
         print(sampleSiteText)
         let response = try await apiInterface.saveTrainingData(fingerprint, roomText: roomText, sampleSiteText: sampleSiteText)
