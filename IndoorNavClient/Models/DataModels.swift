@@ -48,6 +48,10 @@ struct PositioningResponse: Codable {
     let message: String
 }
 
+struct PositioningCancelledResponse: Codable {
+    let success: Bool
+}
+
 enum APIError: Error {
     case requestFailed
     case uploadFailed

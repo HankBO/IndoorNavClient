@@ -8,12 +8,13 @@
 import Cocoa
 import WebKit
 
-class MainViewController: NSViewController {
+class MainViewController: NSViewController, WebViewBridgeDelegate {
 
     var webView: WKWebView!
     var statusLabel: NSTextField!
     var startButton: NSButton!
     var stopButton: NSButton!
+    var positionLabel: NSTextField!
     
     var RoomInputField: NSTextField!
     var SampleSiteInputField: NSTextField!
@@ -34,6 +35,19 @@ class MainViewController: NSViewController {
         setupInitialUI()
         loadWebInterface()
     }
+    
+    func webViewBridge(_ bridge: WebViewBridge, didReceiveMessage message: Any) {
+        guard let messageDict = message as? [String: Any] else {
+            print("type error for received message")
+            return
+        }
+        
+        guard let data = messageDict["data"] as? String else {
+            print("type error for received message")
+            return
+        }
+        positionLabel.stringValue = "Estimated location: \(data)"
+    }
 
     override var representedObject: Any? {
         didSet {
@@ -45,7 +59,8 @@ class MainViewController: NSViewController {
         // Configure WebView with JS bridge
         let configuration = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
-        userContentController.add(webBridge, name: "nativeHandler")
+        webBridge.delegate = self
+        userContentController.add(webBridge, name: "nativeApp")
         configuration.userContentController = userContentController
         
         // Create WebView if not connected via storyboard
@@ -79,6 +94,16 @@ class MainViewController: NSViewController {
             ) { [weak self] notification in
                 if let response = notification.object as? PositioningResponse {
                     self?.handlePositioningUpdate(response)
+                }
+            }
+        
+            NotificationCenter.default.addObserver(
+                forName: .positioningCancelled,
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                if let response = notification.object as? PositioningCancelledResponse {
+                    self?.handlePositioningCancelled(response)
                 }
             }
             
@@ -131,6 +156,13 @@ class MainViewController: NSViewController {
         stopButton.translatesAutoresizingMaskIntoConstraints = false
         stopButton.isEnabled = false
         view.addSubview(stopButton)
+        
+        positionLabel = NSTextField(labelWithString: "Estimated Location: ")
+        positionLabel.textColor = NSColor.black
+        positionLabel.alphaValue = 1.0
+        positionLabel.backgroundColor = NSColor.lightGray
+        positionLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(positionLabel)
         
         // Create training input container
         trainingContainerView = NSView()
@@ -188,8 +220,11 @@ class MainViewController: NSViewController {
             stopButton.leadingAnchor.constraint(equalTo: startButton.trailingAnchor, constant: 10),
             stopButton.widthAnchor.constraint(equalToConstant: 120),
             
+            positionLabel.topAnchor.constraint(equalTo: startButton.bottomAnchor, constant: 10),
+            positionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            
             // Training container constraints
-            trainingContainerView.topAnchor.constraint(equalTo: startButton.bottomAnchor, constant: 5),
+            trainingContainerView.topAnchor.constraint(equalTo: positionLabel.bottomAnchor, constant: 5),
             trainingContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             trainingContainerView.widthAnchor.constraint(equalToConstant: 260),
             trainingContainerView.heightAnchor.constraint(equalToConstant: 100),
@@ -271,14 +306,20 @@ class MainViewController: NSViewController {
                 "networks": networks
             ]
             
-            let stringFPData = dictToJsonString(fingerprintData)
-            
             // send native method vue frontend
-            webBridge.getPositioningUpdate(stringFPData)
+            webBridge.getPositioningUpdate(fingerprintData)
             let locationText = "handlePositioningUpdate success!"
             statusLabel.stringValue = locationText
         } else {
             statusLabel.stringValue = "handlePositioningUpdate falied: \(response.message)"
+        }
+    }
+    
+    private func handlePositioningCancelled(_ response: PositioningCancelledResponse) {
+        if response.success {
+            webBridge.stopPositioningDisplay()
+        } else {
+            statusLabel.stringValue = "handlePositioningUpdate falied"
         }
     }
     

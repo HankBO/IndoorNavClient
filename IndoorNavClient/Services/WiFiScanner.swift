@@ -47,6 +47,7 @@ class WiFiScanner {
     }
     
     func createFingerprint() async throws -> WiFiFingerprint {
+        print("Start scanning networks, timestamp: \(getCurrentTimeByHHmmssSSS())")
         let networks = try await scanNetworks()
         let deviceInfo = DeviceInfo(
             deviceId: getDeviceId(),

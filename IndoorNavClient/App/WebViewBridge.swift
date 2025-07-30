@@ -7,21 +7,34 @@
 
 import WebKit
 
+protocol WebViewBridgeDelegate: AnyObject {
+    func webViewBridge(_ bridge: WebViewBridge, didReceiveMessage message: Any)
+}
+
 class WebViewBridge: NSObject, WKScriptMessageHandler {
     weak var webView: WKWebView?
+    weak var delegate: WebViewBridgeDelegate?
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        
+        if message.name == "nativeApp" {
+            print("Message from Frontend(Time: \(getCurrentTimeByHHmmssSSS()): \(message.body)")
+            delegate?.webViewBridge(self, didReceiveMessage: message.body)
+        }
     }
     
-    func getPositioningUpdate(_ fingerprintJsonData: String?) {
+    func getPositioningUpdate(_ fingerprintJsonData: [String: Any]) {
+        print("Send fingerprint to frontend service, timestamp: \(getCurrentTimeByHHmmssSSS())")
+        let string: String = dictToJsonString(fingerprintJsonData)!
         
-        let string: String = fingerprintJsonData ?? ""
-        
-        print("send script to front-end:", string)
-        AppLogger.shared.debug("\(string)")
+        // print("send script to front-end:", string)
+        // AppLogger.shared.debug("\(string)")
 
-        let script = "window.nativeBridge.getPositioningUpdate(\(string))"
+        let script = "window.getPositioningUpdate(\(string))"
+        webView?.evaluateJavaScript(script)
+    }
+    
+    func stopPositioningDisplay() {
+        let script = "window.stopPositioningDisplay()"
         webView?.evaluateJavaScript(script)
     }
     

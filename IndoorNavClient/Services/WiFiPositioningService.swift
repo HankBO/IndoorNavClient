@@ -9,6 +9,7 @@ import Foundation
 
 extension Notification.Name {
     static let positioningUpdated = Notification.Name("positioningUpdated")
+    static let positioningCancelled = Notification.Name("positioningCancelled")
     static let wifiScanCompleted = Notification.Name("wifiScanCompleted")
     static let trainingDataCollected = Notification.Name("trainingDataCollected")
 }
@@ -19,7 +20,7 @@ class WiFiPositioningService {
     private var isTracking = false
     private var trackingTimer: Timer?
     
-    func startLocationTracking(interval: TimeInterval = 3.0) {
+    func startLocationTracking(interval: TimeInterval = 2.0) {
         isTracking = true
         trackingTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
             Task {
@@ -32,12 +33,16 @@ class WiFiPositioningService {
         isTracking = false
         trackingTimer?.invalidate()
         trackingTimer = nil
+        
+        Task {
+            await self.stopPositioningDisplay()
+        }
     }
     
     private func performPositioningRequest() async {
         do {
             let fingerprint = try await scanner.createFingerprint()
-
+            print("Scanning network finished, timestamp: \(getCurrentTimeByHHmmssSSS())")
             let response = PositioningResponse(
                 success: true,
                 fingerprint: fingerprint,
@@ -57,9 +62,19 @@ class WiFiPositioningService {
         }
     }
     
+    private func stopPositioningDisplay() async {
+        await MainActor.run {
+            NotificationCenter.default.post(
+                name: .positioningCancelled,
+                object: PositioningCancelledResponse(
+                    success: true
+                )
+            )
+        }
+    }
+    
     func collectTrainingData(roomText: String, sampleSiteText: String) async throws -> CollectDataResponse {
         let fingerprint = try await scanner.createFingerprint()
-        print(fingerprint)
         print(roomText)
         print(sampleSiteText)
         let response = try await apiInterface.saveTrainingData(fingerprint, roomText: roomText, sampleSiteText: sampleSiteText)
@@ -72,13 +87,5 @@ class WiFiPositioningService {
         }
         
         return response
-    }
-    
-    private func jsonString(from object: [String: Any]) -> String {
-        guard let data = try? JSONSerialization.data(withJSONObject: object),
-              let string = String(data: data, encoding: .utf8) else {
-            return "{}"
-        }
-        return string
     }
 }
